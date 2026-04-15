@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+family_chat.db
+uploads/*
+!uploads/.gitkeep
