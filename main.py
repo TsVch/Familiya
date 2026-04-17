@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import os
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -24,3 +24,10 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 def serve_index():
     index_path = Path("static") / "index.html"
     return FileResponse(index_path)
+
+# 👇 Для деплоя проекта на Render(веб- хостинг)
+if __name__ == "__main__":
+    import uvicorn
+
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)

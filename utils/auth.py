@@ -1,23 +1,25 @@
 from datetime import datetime, timedelta, timezone
 
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+import hashlib
+
 
 SECRET_KEY = "change-this-in-production"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# 🔐 Хеширование пароля (SHA256 для MVP)
+def hash_password(password: str):
+    return hashlib.sha256(password.encode()).hexdigest()
 
 
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
-
-
+# 🔐 Проверка пароля
 def verify_password(plain_password: str, password_hash: str) -> bool:
-    return pwd_context.verify(plain_password, password_hash)
+    return hashlib.sha256(plain_password.encode()).hexdigest() == password_hash
 
 
+# 🔑 Создание JWT токена
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (
@@ -27,6 +29,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
+# 🔍 Декодирование токена
 def decode_access_token(token: str) -> dict | None:
     try:
         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
